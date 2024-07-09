@@ -7,23 +7,28 @@ class AuthController {
         autoBind(this)
         this.#service = new AuthService();
     }
-
+    
     async signup(req, res, next){
         try {
-            const result = await this.#service.signup({});
+            const { username, password } = req.body;
+            await this.#service.signup({ username, password });
             return res.json({
-                message: "signup successfully, please login on your account "
-            })
+                message: "Signup successful, please login to your account."
+            });
         } catch (error) {
             next(error)
         }
     }
     async login(req, res, next){
         try {
-            const result = await this.#service.login({});
-            return res.json(result)
+            const { username, password } = req.body;
+            const { token } = await this.#service.login({ username, password });
+            res.cookie('access_token', token);
+            return res.json({
+                message: "Login successful"
+            });
         } catch (error) {
-            next(error)
+            next(error);
         }
     }
 }
